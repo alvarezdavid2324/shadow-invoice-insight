@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import logo from "@/assets/shadowrez-logo.png";
 
 const Navbar = () => {
@@ -22,7 +23,9 @@ const Navbar = () => {
           <a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" className="hidden sm:inline-flex">Sign in</Button>
+          <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
+            <Link to="/dashboard">Dashboard</Link>
+          </Button>
           <Button variant="hero" size="sm">Book demo</Button>
         </div>
       </nav>
