@@ -1,15 +1,14 @@
-import { Eye } from "lucide-react";
+import logo from "@/assets/shadowrez-logo.png";
 
 const Footer = () => {
   return (
     <footer className="border-t border-border py-12">
       <div className="container flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-gradient-cyan flex items-center justify-center">
-            <Eye className="w-3.5 h-3.5 text-primary-foreground" strokeWidth={2.5} />
-          </div>
-          <span className="font-semibold">Shadowrez<span className="text-cyan"> AI</span></span>
-        </div>
+        <img
+          src={logo}
+          alt="Shadowrez AI logo"
+          className="h-9 w-auto object-contain opacity-90"
+        />
         <p className="text-xs text-muted-foreground font-mono">
           © 2026 Shadowrez AI · Automate the shadows.
         </p>
