@@ -22,9 +22,12 @@ const Hero = () => {
             AI-powered AP automation
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-[1.05] mb-6">
-            <span className="text-foreground">Automate the </span>
-            <span className="text-gradient-cyan">shadows.</span>
+          <h1 className="mb-6 flex justify-center">
+            <img
+              src={logo}
+              alt="Shadowrez AI — Automate the shadows"
+              className="w-full max-w-xl md:max-w-2xl h-auto object-contain drop-shadow-[0_0_40px_hsl(var(--cyan)/0.35)]"
+            />
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed">
