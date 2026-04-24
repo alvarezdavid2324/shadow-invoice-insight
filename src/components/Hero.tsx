@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import InvoiceExtractor from "./InvoiceExtractor";
+import logo from "@/assets/shadowrez-logo.png";
 
 const Hero = () => {
   return (
