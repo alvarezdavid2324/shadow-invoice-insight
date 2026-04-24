@@ -1,15 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Shadowrez AI — Dark Cyan Design System */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Dark cyan core palette */
+    --background: 195 65% 4%;
+    --foreground: 180 30% 95%;
+
+    --surface: 195 50% 7%;
+    --surface-elevated: 192 45% 10%;
+
+    --cyan: 184 95% 50%;
+    --cyan-glow: 180 100% 60%;
+    --cyan-deep: 192 90% 25%;
+
+    --shadow-foreground: 200 20% 60%;
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
