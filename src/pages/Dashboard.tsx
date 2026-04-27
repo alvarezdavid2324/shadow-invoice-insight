@@ -1,134 +1,152 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import logo from "@/assets/shadowrez-logo.png";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { generateMockInvoices, Invoice } from "@/lib/mockInvoices";
-import PlanUsage, { PlanTier } from "@/components/dashboard/PlanUsage";
-import UploadZone from "@/components/dashboard/UploadZone";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { FileCheck2, DollarSign, AlertCircle, Clock, Search, UploadCloud, TrendingUp, TrendingDown } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useDashboard } from "@/components/dashboard/DashboardContext";
+import DashboardCharts from "@/components/dashboard/DashboardCharts";
 import InvoiceTable from "@/components/dashboard/InvoiceTable";
-import { ArrowLeft, FileCheck2, Clock, AlertCircle, DollarSign } from "lucide-react";
 
 const Dashboard = () => {
-  const [invoices, setInvoices] = useState<Invoice[]>(() => generateMockInvoices(218));
-  const [plan, setPlan] = useState<PlanTier>("starter");
+  const { invoices, stats, plan } = useDashboard();
 
-  const stats = useMemo(() => {
-    const total = invoices.reduce((s, i) => s + i.total, 0);
-    const review = invoices.filter((i) => i.status === "review").length;
-    const processing = invoices.filter((i) => i.status === "processing").length;
-    return { total, review, processing, count: invoices.length };
-  }, [invoices]);
-
-  const handleExtracted = (inv: Invoice) => setInvoices((prev) => [inv, ...prev]);
+  const planCfg = {
+    starter: { name: "Starter", limit: 200, price: "$49/mo" },
+    pro: { name: "Pro", limit: 500, price: "$149/mo" },
+    enterprise: { name: "Enterprise", limit: Infinity, price: "Custom" },
+  }[plan];
+  const limit = planCfg.limit === Infinity ? 0 : planCfg.limit;
+  const usagePct = limit ? Math.min(100, (stats.count / limit) * 100) : 0;
+  const totalK = stats.total >= 1000 ? `$${(stats.total / 1000).toFixed(1)}k` : `$${stats.total.toFixed(0)}`;
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 backdrop-blur-xl bg-background/70 border-b border-border/50">
-        <div className="container flex items-center justify-between h-16">
-          <div className="flex items-center gap-3">
-            <Link to="/" className="flex items-center gap-2 group">
-              <img
-                src={logo}
-                alt="Shadowrez AI"
-                className="h-8 w-auto object-contain drop-shadow-[0_0_12px_hsl(var(--cyan)/0.4)]"
-              />
-              <span className="font-semibold tracking-tight">
-                Shadowrez<span className="text-cyan"> AI</span>
-              </span>
-            </Link>
-            <span className="text-muted-foreground">/</span>
-            <span className="text-sm font-medium">Dashboard</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Select value={plan} onValueChange={(v) => setPlan(v as PlanTier)}>
-              <SelectTrigger className="w-[170px] h-9">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="starter">Starter — $49/mo</SelectItem>
-                <SelectItem value="pro">Pro — $149/mo</SelectItem>
-                <SelectItem value="enterprise">Enterprise</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button asChild variant="ghost" size="sm">
-              <Link to="/">
-                <ArrowLeft className="h-4 w-4" /> Back to site
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      <main className="container py-8 space-y-6">
+    <div className="space-y-6 max-w-[1400px] mx-auto">
+      {/* Header */}
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-3xl font-bold tracking-tight">
+            Welcome back,<span className="text-cyan"> Jartiza</span>
+          </h1>
+          <p className="text-muted-foreground mt-1 text-sm">
             Drop invoices, review extracted data, and push to your accounting tools.
           </p>
         </div>
-
-        {/* Stat strip */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard
-            icon={<FileCheck2 className="h-4 w-4" />}
-            label="Invoices this month"
-            value={stats.count.toLocaleString()}
-          />
-          <StatCard
-            icon={<DollarSign className="h-4 w-4" />}
-            label="Total processed value"
-            value={`$${stats.total.toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
-          />
-          <StatCard
-            icon={<AlertCircle className="h-4 w-4" />}
-            label="Needs review"
-            value={stats.review.toString()}
-            accent={stats.review > 0}
-          />
-          <StatCard icon={<Clock className="h-4 w-4" />} label="In processing" value={stats.processing.toString()} />
-        </div>
-
-        {/* Upload + plan */}
-        <div className="grid lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2">
-            <UploadZone onExtracted={handleExtracted} />
+        <div className="flex gap-2 w-full md:w-auto">
+          <div className="relative flex-1 md:w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Search invoices, vendors, dates…" className="pl-9" />
           </div>
-          <PlanUsage plan={plan} used={stats.count} />
+          <Button asChild variant="default" className="bg-gradient-cyan text-primary-foreground hover:opacity-90">
+            <Link to="/dashboard/upload">
+              <UploadCloud className="h-4 w-4" /> Upload Invoice
+            </Link>
+          </Button>
         </div>
+      </div>
 
-        {/* Table */}
-        <InvoiceTable invoices={invoices} />
-      </main>
+      {/* Stat strip */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          label="Invoices · this month"
+          value={stats.count.toLocaleString()}
+          trend={{ dir: "down", text: "1 from last month" }}
+        />
+        <StatCard
+          label="Total extracted"
+          value={totalK}
+          subtext="Across all sources"
+          icon={<DollarSign className="h-4 w-4" />}
+        />
+        <StatCard
+          label="Needs review"
+          value={stats.review.toString()}
+          icon={<AlertCircle className="h-4 w-4" />}
+          accent={stats.review > 0}
+        />
+        <UsageCard
+          name={planCfg.name}
+          price={planCfg.price}
+          used={stats.count}
+          limit={planCfg.limit}
+          pct={usagePct}
+        />
+      </div>
+
+      {/* Charts */}
+      <DashboardCharts invoices={invoices} />
+
+      {/* Table */}
+      <InvoiceTable invoices={invoices} />
     </div>
   );
 };
 
 const StatCard = ({
-  icon,
   label,
   value,
+  subtext,
+  trend,
+  icon,
   accent,
 }: {
-  icon: React.ReactNode;
   label: string;
   value: string;
+  subtext?: string;
+  trend?: { dir: "up" | "down"; text: string };
+  icon?: React.ReactNode;
   accent?: boolean;
 }) => (
   <Card className="bg-gradient-card border-border/60">
-    <CardContent className="p-4">
-      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <span className={accent ? "text-yellow-400" : "text-cyan"}>{icon}</span>
-        {label}
+    <CardContent className="p-5">
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">{label}</span>
+        {icon && <span className={accent ? "text-yellow-400" : "text-cyan"}>{icon}</span>}
       </div>
-      <div className="mt-2 text-2xl font-semibold font-mono">{value}</div>
+      <div className="mt-3 text-3xl font-semibold font-mono">{value}</div>
+      {trend && (
+        <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
+          {trend.dir === "up" ? (
+            <TrendingUp className="h-3 w-3 text-green-400" />
+          ) : (
+            <TrendingDown className="h-3 w-3 text-muted-foreground" />
+          )}
+          <span>{trend.text}</span>
+        </div>
+      )}
+      {subtext && <div className="mt-2 text-xs text-muted-foreground">{subtext}</div>}
+    </CardContent>
+  </Card>
+);
+
+const UsageCard = ({
+  name,
+  price,
+  used,
+  limit,
+  pct,
+}: {
+  name: string;
+  price: string;
+  used: number;
+  limit: number;
+  pct: number;
+}) => (
+  <Card className="bg-gradient-card border-border/60">
+    <CardContent className="p-5">
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">Monthly usage</span>
+        <Badge variant="outline" className="border-cyan/40 text-cyan h-6">
+          {name} — {price}
+        </Badge>
+      </div>
+      <div className="mt-3 text-2xl font-semibold font-mono">
+        {used}
+        <span className="text-muted-foreground text-base"> / {limit === Infinity ? "∞" : limit}</span>
+      </div>
+      <div className="text-xs text-muted-foreground mb-2">invoices processed</div>
+      <Progress value={pct} className="h-1.5" />
     </CardContent>
   </Card>
 );

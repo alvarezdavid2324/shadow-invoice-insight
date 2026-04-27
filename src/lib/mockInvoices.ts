@@ -114,6 +114,34 @@ export const invoicesToCSV = (invoices: Invoice[]): string => {
   return [headers.join(","), ...rows].join("\n");
 };
 
+export const getVolumeByMonth = (invoices: Invoice[]) => {
+  const map = new Map<string, number>();
+  invoices.forEach((i) => {
+    const d = new Date(i.date);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    map.set(key, (map.get(key) ?? 0) + 1);
+  });
+  return Array.from(map.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([k, v]) => {
+      const [y, m] = k.split("-");
+      const label = new Date(Number(y), Number(m) - 1, 1).toLocaleDateString(undefined, {
+        month: "short",
+        year: "2-digit",
+      });
+      return { month: label, volume: v };
+    });
+};
+
+export const getSpendByVendor = (invoices: Invoice[], topN = 5) => {
+  const map = new Map<string, number>();
+  invoices.forEach((i) => map.set(i.vendor, (map.get(i.vendor) ?? 0) + i.total));
+  return Array.from(map.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, topN)
+    .map(([vendor, total]) => ({ vendor, total: +total.toFixed(2) }));
+};
+
 export const downloadFile = (filename: string, content: string, mime = "text/csv") => {
   const blob = new Blob([content], { type: mime });
   const url = URL.createObjectURL(blob);
