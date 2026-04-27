@@ -29,6 +29,7 @@ const DashboardLayout = () => {
         </div>
       </div>
     </SidebarProvider>
+    </DashboardProvider>
   );
 };
 
