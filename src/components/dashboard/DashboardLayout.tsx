@@ -3,9 +3,11 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import AppSidebar from "./AppSidebar";
+import { DashboardProvider } from "./DashboardContext";
 
 const DashboardLayout = () => {
   return (
+    <DashboardProvider>
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
